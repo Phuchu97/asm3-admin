@@ -1,0 +1,213 @@
+html {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+  
+  .login {
+    height: 828.75px;
+    background: linear-gradient(#141e30,#243b55);
+  }
+  
+  .login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+
+  .login-box h1 {
+    color: cyan;
+  }
+  
+  .navbar {
+      background-color: #4CAF50;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    
+    .navbar a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+    }
+  
+    .form-middle h2 {
+      text-align: center;
+      color: #fff;
+      margin: 0 0 30px;
+      padding: 0;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px 0;
+      font-size: 16px;
+      color: #fff;
+      margin-bottom: 30px;
+      border: none;
+      background: transparent;
+      border-bottom: 1px solid #fff;
+      outline: none;
+    }
+  
+    .form-middle-group {
+      position: relative;
+    }
+  
+    .form-middle-group .form-middle-label {
+      position: absolute;
+      color: black;
+      top: 0;
+      left: 0;
+      padding: 10px 0;
+      font-size: 16px;
+      pointer-events: none;
+    }
+  
+    .form-middle-group input:focus ~ label {
+      top: -20px;
+      left: 0;
+      color: #03e9f4;
+      font-size: 12px;
+    }
+
+    .MuiFormControl-root {
+      width: 100%;
+    }
+  
+    .MuiFormLabel-root {
+      color: deeppink !important;
+    }
+
+    .input-login >div> input {
+      color: #88ffff !important;
+    }
+
+    .button-submit {
+      font-size: 16px;
+      position: relative;
+      display: inline-block;
+      padding: 10px 20px;
+      color: #03e9f4;
+      text-transform: uppercase;
+      overflow: hidden;
+      margin-top: 40px;
+      transition: 0.25s;
+      letter-spacing: 4px;
+      border-radius: 5px;
+      background: #0c131c;
+      border: none;
+    }
+
+    .button-submit:hover {
+      cursor: pointer;
+      background: #0eb2bb;
+      color: #fff;
+      box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    }
+
+    .button-submit span {
+      position: absolute;
+      display: block;
+    }
+  
+    .button-submit span:nth-child(1) {
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #03e9f4);
+      animation: btn1-animation 1s linear infinite;
+    }
+
+    @keyframes btn1-animation {
+      0% {
+        left: -100%;
+      }
+      50%,100% {
+        left: 100%;
+      }
+    }
+
+    .button-submit span:nth-child(2) {
+      right: 0;
+      top: -100%;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #03e9f4);
+      animation: btn2-animation 1s linear infinite;
+    }
+
+    @keyframes btn2-animation {
+      0% {
+        top: -100%;
+      }
+      50%,100% {
+        top: 100%;
+      }
+    }
+  
+    .button-submit span:nth-child(3) {
+      bottom: 0;
+      right: -100%;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #03e9f4);
+      animation: btn3-animation 1s linear infinite;
+    }
+
+    @keyframes btn3-animation {
+      0% {
+        right: -100%;
+      }
+      50%,100% {
+        right: 100%;
+      }
+    }
+
+    .button-submit span:nth-child(4) {
+      left: 0;
+      bottom: -100%;
+      height: 100%;
+      width: 1px;
+      background: linear-gradient(90deg, transparent, #03e9f4);
+      animation: btn4-animation 1s linear infinite;
+    }
+
+    @keyframes btn4-animation {
+      0% {
+        bottom: -100%;
+      }
+      50%,100% {
+        bottom: 100%;
+      }
+    }
+
+    .text-register {
+      color: #fff;
+      margin-top: 20px;
+    }
+
+    .text-register a {
+      color: #03e9f4;
+      text-decoration: none;
+      letter-spacing: 1.5px;
+    }

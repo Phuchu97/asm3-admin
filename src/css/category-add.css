@@ -1,0 +1,49 @@
+.hotel-add-header {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin: 20px;
+    padding: 12px 0;
+    border-radius: 5px;
+}
+
+.hotel-add-header h3 {
+    opacity: 0.6;
+    margin: 0;
+}
+
+
+.hotel-add-content {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin: 20px;
+    border-radius: 5px;
+    padding: 20px 10px;
+}
+
+.form-item {
+    /* max-height: 100px; */
+    margin-bottom: 30px;
+}
+
+.form-input-add {
+    width: 85%;
+}
+
+.form-category > .MuiInputBase-root > input {
+    color: black !important;
+}
+
+.form-featured {
+    text-align: left;
+    padding-left: 55px;
+}
+
+.form-select-room {
+    width: 93%;
+}
+
+.form-btn-submit {
+    padding: 10px 60px;
+    background-color: #008080;
+}
+
+
+

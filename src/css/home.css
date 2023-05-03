@@ -1,0 +1,186 @@
+.home {
+    margin: 0;
+}
+
+.home-top {
+    margin-top: 10vh;
+}
+
+.home,.home-left, .home-right {
+    min-height: 820px;
+}
+
+.row {
+    margin: 0;
+}
+
+
+.home ul {
+    margin: 0;
+}
+
+.home h5 {
+    text-align: left;
+}
+
+.sidebar-item {
+    margin: 15px 0;
+}
+
+.main-item {
+    display: flex;
+}
+
+.main-item > h6 {
+    margin: 0;
+    align-self: center;
+}
+
+.main-item-icon {
+    margin-right: 10px;
+    margin-left: 20px;
+}
+
+.home li {
+    list-style: none;
+}
+
+.home-title {
+    color: #6b43ff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.home-title>h3{
+    line-height: 49px;
+    margin: 0;
+}
+
+.home-right {
+    padding-left: 0;
+}
+
+.home-left {
+    height: 100%;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    padding-right: 0;
+}
+
+.top {
+    height: 20px;
+}
+
+.sidebar-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.list-title {
+    text-align: left;
+    padding: 0;
+}
+
+.list-title > li {
+    margin: 10px 0;
+}
+
+.list-title i {
+    margin-right: 10px;
+    margin-left: 20px;
+}
+
+.logout {
+    display: flex;
+}
+
+
+/* Dashboard */
+
+.dashboard-header {
+    color: black;
+    margin-top: 12vh;
+}
+
+.header-item {
+    margin-top: 40px;
+}
+
+.header-item-content {
+    border-radius: 15px;
+    min-height: 120px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.header-item-content-title {
+    opacity: 0.6;
+    text-align: left;
+    padding: 10px;
+}
+
+.header-item-content p {
+    text-align: left;
+    padding-left: 10px;
+    font-size: 1.8em;
+    margin: 0;
+}
+
+.header-item-content-icon {
+    text-align: right;
+    padding: 20px 10px;
+}
+
+.header-item-content-icon span{
+    padding: 8px 10px;
+    border-radius: 5px;
+}
+
+.users-icon {
+    background-color: #ffcccc;
+}
+
+.user-icon i {
+    color: #dc153c;
+}
+
+.orders-icon {
+    background-color: #f8edd2;
+}
+
+.orders-icon i {
+    color: #e1b74d;
+}
+
+
+.earnings-icon {
+    background-color: #cce6cc;
+}
+
+.earnings-icon i {
+    color: #1a8d1a;
+}
+
+.balance-icon {
+    background-color: #e6cce6;
+}
+
+.balance-icon i {
+    color: #993399;
+}
+
+.dashboard-content {
+    min-height: 500px;
+    margin-top: 50px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+
+/* Hotels */
+
+.hotel-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.hotel-header h5 {
+    opacity: 0.6;
+    
+}
