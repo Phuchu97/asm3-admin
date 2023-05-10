@@ -45,6 +45,7 @@ export function getFileSlide(callback) {
 }
 
 export function deleteSlide(callback, id) {
+    const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
     fetch(`${API_URL}/delete-slide`,  {
         method: 'DELETE',
@@ -52,7 +53,7 @@ export function deleteSlide(callback, id) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({id: id}),
+        body: JSON.stringify({id: id,role}),
     })
       .then(res => res.json())
       .then(callback)
