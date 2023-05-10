@@ -7,11 +7,13 @@ import '../css/slides.css'
 function SlideComponent() {
 
     const[activeModal, setActiveModal] = useState(false);
+    const role = localStorage.getItem('role');
     const[slideImages,setSlideImages] = useState([]);
 
     const handleAddSlide = (ev) => {
         const files = ev.target.files;
         const data = new FormData();
+        data.append('role', role);
         for(let i = 0; i < files.length;i++) {
             data.append(`photos`, files[i])
         }
