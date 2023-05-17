@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { Navbar, Form, FormGroup, FormControl, Button } from "react-bootstrap";
 import '../css/login.css';
@@ -62,6 +62,11 @@ function LoginComponent() {
         alert('Có lỗi trong quá trình đăng nhập!')
       }
     };
+
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if(token) navigate('/home');
+    });
   
     return (
       <div className="login">
