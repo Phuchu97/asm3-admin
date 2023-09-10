@@ -7,9 +7,10 @@ export function AddCategory(callback, data) {
     fetch(`${API_URL}/add-category`,  {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: {...data,role},
+        body: JSON.stringify({...data,role}),
         withCredentials: true,
     })
       .then(res => res.json())

@@ -41,7 +41,7 @@ function CategoriesComponent() {
       editable: true,
       renderCell: (params) => (
         <div>
-          <img style={{width: '135%', height: '48px'}} src={API_URL+'/'+params.value.file_url} alt="abc" />
+          <img style={{width: '135%', height: '48px'}} src={params.value} alt="abc" />
         </div>
       )
     },

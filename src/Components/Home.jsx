@@ -23,7 +23,7 @@ function HomeComponent() {
       <div className="col-2 home-left sidebar dashboard-header">
         <div className="main sidebar-item">
           <div className="main-title"><h5>MAIN</h5></div>
-          <Link to={'/home/dashboard'} style={{textDecoration: 'none'}}>
+          <Link to={'/home'} style={{textDecoration: 'none'}}>
             <div className="main-item">
               <div className="main-item-icon"><i class="fa-solid fa-chart-line"></i></div>
               <h6>Dashboard</h6>
@@ -50,16 +50,16 @@ function HomeComponent() {
                 Products
               </Link>
             </li>
-            <li className="list-title-item">
+            {/* <li className="list-title-item">
               <Link to={'/home/transaction'} style={{textDecoration: 'none'}}>
                 <i class="fa-solid fa-truck-fast"></i>
                 Transactions
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
 
-        <div className="row sidebar-item sidebar-list">
+        {/* <div className="row sidebar-item sidebar-list">
           <h5>NEW</h5>
           <ul className="list-title">
             <li className="list-title-item">
@@ -75,7 +75,7 @@ function HomeComponent() {
               </Link>
             </li>
           </ul>
-        </div>
+        </div> */}
       </div>
 
       <div className="col-10 home-right dashboard-header">

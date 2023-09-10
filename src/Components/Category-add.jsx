@@ -3,35 +3,32 @@ import '../css/category-add.css'
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { AddCategory } from '../Services/Category';
+import { uploadFile } from '../firebase/uploadFile';
 
 function CategoryAddComponent() {
   const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
   const [categoryImage, setCategoryImage] = useState(null);
 
-  const addCategory = () => {
-    const formImage = new FormData();
-    if(categoryImage !== undefined && categoryName !== '') {
-      formImage.append('photos',categoryImage);
-      formImage.append('name',categoryName);
-    } else {
-      return;
+  const addCategory = async () => {
+    if(categoryImage === undefined || categoryName == '') return;
+    const file = await uploadFile(categoryImage);
+    if(!file) return alert('Có lỗi trong quá trình tải ảnh');
+    let data = {
+      file,
+      name: categoryName
     }
     AddCategory((res) => {
       if(res.statusCode === 200) {
         navigate('/home/categories')
       }
-    }, formImage)
+    }, data)
   }
 
   const handleFile = (ev) => {
     setCategoryImage(ev.target.files[0])
   }
 
-  useEffect(() => {
-
-  }, []);
-  
   return (
     <div className="hotel-add">
         <div className='hotel-add-header'>

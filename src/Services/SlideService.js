@@ -16,13 +16,15 @@ export function Uploadslide(callback, data) {
 }
 
 export function Addslide(callback, data) {
+    const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
     fetch(`${API_URL}/add-slide`,  {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: data,
+        body: JSON.stringify({...data, role}),
         withCredentials: true,
     })
       .then(res => res.json())
