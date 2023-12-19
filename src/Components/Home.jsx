@@ -50,12 +50,12 @@ function HomeComponent() {
                 Products
               </Link>
             </li>
-            {/* <li className="list-title-item">
-              <Link to={'/home/transaction'} style={{textDecoration: 'none'}}>
+            <li className="list-title-item">
+              <Link to={'/home/slide-middle'} style={{textDecoration: 'none'}}>
                 <i class="fa-solid fa-truck-fast"></i>
-                Transactions
+                Slide Middle
               </Link>
-            </li> */}
+            </li>
           </ul>
         </div>
 
