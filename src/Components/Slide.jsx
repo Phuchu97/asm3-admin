@@ -34,7 +34,6 @@ function SlideComponent() {
     }
 
     const handleDeleteSlide = (item) => {
-        console.log(item);
         deleteSlide((res) => {
             if (res.statusCode === 200) {
                 getFileSlide(hanldeGetFile);

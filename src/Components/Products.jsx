@@ -27,7 +27,7 @@ function ProductsComponent() {
   //
 
   const moveToProductAdd = () => {
-    navigate('/home/product-add/new');
+    navigate('/home/product-add');
   }
 
   const moveToEditAdd = (id) => {

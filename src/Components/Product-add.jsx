@@ -10,6 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { AddProduct, editProduct,getListProductDetail } from '../Services/Products';
+import { uploadMultiFile } from '../firebase/uploadFile';
 
 function ProductAddComponent() {
   const navigate = useNavigate();
@@ -42,28 +43,31 @@ function ProductAddComponent() {
   const [descriptionDetail, setDescriptionDetail] = useState('');
   const [imagesProduct, setImagesProduct] = useState([]);
 
-  const addProduct = () => {
-    const formProduct = new FormData();
-    for(let i = 0; i < imagesProduct.length;i++) {
-      formProduct.append(`photos`, imagesProduct[i]);
+  const addProduct = async() => {
+    let listImages;
+    if(imagesProduct.length > 0) {
+      listImages = await uploadMultiFile(imagesProduct);
     }
     const getCategoryName = listCategory.filter(obj => obj._id === categoryId);
-    formProduct.append('id',product_id);
-    formProduct.append('role',role);
-    formProduct.append('name',name);
-    formProduct.append('price',price);
-    formProduct.append('category_id',getCategoryName[0]._id);
-    formProduct.append('category_name',getCategoryName[0].name);
-    formProduct.append('description_sale',descriptionSale);
-    formProduct.append('description_detail',descriptionDetail);
+    let data = {
+      id: product_id,
+      role,
+      name,
+      price,
+      category_id: getCategoryName[0]._id,
+      description_sale: descriptionSale,
+      description_detail: descriptionDetail,
+      files: listImages
+    }
+    console.log(data);
     if(product_id) {
       editProduct((res) => {
         console.log(res);
-      }, formProduct)
+      }, data)
     } else {
       AddProduct((res) => {
         console.log(res);
-      },formProduct)
+      },data);
     }
   }
 

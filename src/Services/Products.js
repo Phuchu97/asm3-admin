@@ -6,9 +6,10 @@ export function AddProduct(callback, data) {
     fetch(`${API_URL}/add-product`,  {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: data,
+        body: JSON.stringify(data),
         withCredentials: true,
     })
       .then(res => res.json())

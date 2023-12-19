@@ -22,6 +22,7 @@ function App() {
           <Route path="category-add" element={<CategoryAddComponent/>}/>
           <Route path="products" element={<ProductsComponent/>}/>
           <Route path="product-add/:product_id" element={<ProductAddComponent/>}/>
+          <Route path="product-add/" element={<ProductAddComponent/>}/>
         </Route>
       </Routes>
     </div>
