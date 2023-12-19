@@ -7,6 +7,7 @@ import CategoryAddComponent from './Components/Category-add';
 import ProductAddComponent from './Components/Product-add';
 import ProductsComponent from './Components/Products';
 import SlideComponent from './Components/Slide';
+import SlideMiddleComponent from './Components/SlideMiddle';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="category-add" element={<CategoryAddComponent/>}/>
           <Route path="products" element={<ProductsComponent/>}/>
           <Route path="product-add/:product_id" element={<ProductAddComponent/>}/>
+          <Route path="slide-middle" element={<SlideMiddleComponent/>}/>
         </Route>
       </Routes>
     </div>
