@@ -8,7 +8,9 @@ import ProductAddComponent from './Components/Product-add';
 import ProductsComponent from './Components/Products';
 import SlideComponent from './Components/Slide';
 import SlideMiddleComponent from './Components/SlideMiddle';
+import { ToastContainer } from 'react-toastify';
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   
@@ -22,10 +24,12 @@ function App() {
           <Route path="slides" element={<SlideComponent/>}/>
           <Route path="category-add" element={<CategoryAddComponent/>}/>
           <Route path="products" element={<ProductsComponent/>}/>
+          <Route path="product-add/" element={<ProductAddComponent/>}/>
           <Route path="product-add/:product_id" element={<ProductAddComponent/>}/>
           <Route path="slide-middle" element={<SlideMiddleComponent/>}/>
         </Route>
       </Routes>
+      <ToastContainer/>
     </div>
   );
 }

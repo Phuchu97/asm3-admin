@@ -1,144 +1,138 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Button, Grid, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../Constants/ApiConstant';
-import { getListProducts, deleteProduct } from '../Services/Products';
-import CheckModalComponent from '../Modals/CheckModal';
+import { getFileSlideMiddle, AddslideMiddle, deleteSlideMiddle } from '../Services/SlideMiddle';
+import { uploadFile, deleteFile } from "../firebase/uploadFile";
+import '../css/slides.css';
+import { toast } from 'react-toastify';
 
 function SlideMiddleComponent() {
-  
-    const navigate = useNavigate();
-    const [listProducts, setListProducts] = useState([]);
-    const [currentIdProduct, setCurrentIdProduct] = useState('');
-  
-    // Modal check accept
-    const [openModal, setOpenModal] = useState(false);
-  
-    const handleOpenModal = (id) => {
-      setOpenModal(true);
-      setCurrentIdProduct(id);
-    };
-  
-    const handleCloseModal = () => {
-      setOpenModal(false)
-    };
-  
-    //
-  
-    const moveToProductAdd = () => {
-      navigate('/home/product-add/new');
-    }
-  
-    const moveToEditAdd = (id) => {
-      navigate(`/home/product-add/${id}`);
-    }
-  
-    const handleDeleteProduct = () => {
-      deleteProduct((res) => {
-        if(res.statusCode === 200) {
-          getListProducts(handleGetProducts);
-        } else {
-          alert('Có lỗi trong quá trình xử lý!')
+
+  const navigate = useNavigate();
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [listImages, setListImages] = useState([]);
+  const [activeModal, setActiveModal] = useState(false);
+
+  const handleAddSlide = async (ev) => {
+    const files = ev.target.files;
+    const file = await uploadFile(files[0]);
+    if (file) {
+      AddslideMiddle((res) => {
+        if (res.statusCode === 200) {
+          getFileSlideMiddle(hanldeGetFile);
         }
-      }, {id: currentIdProduct});
-      handleCloseModal();
+      }, { id, name, description, files: [...listImages, file] });
+    } else {
+      alert("Lỗi trong quá trình upload ảnh!")
+    };
+  };
+
+  const handleSend = async (ev) => {
+    AddslideMiddle((res) => {
+      if (res.statusCode === 200) {
+        getFileSlideMiddle(hanldeGetFile);
+        toast.success("Sửa thành công!", {className: 'toast-message'});
+      }
+    }, { id, name, description, files: listImages });
+  };
+
+  const hanldeGetFile = (res) => {
+    if (res.statusCode === 200) {
+      console.log(res);
+      setListImages(res.data[0].image);
+      setId(res.data[0]._id);
+      setName(res.data[0].name);
+      setDescription(res.data[0].description);
     }
-  
-    const handleGetProducts = (res) => {
-      setListProducts(res.data);
-    }
-  
-    useEffect(() => {
-      getListProducts(handleGetProducts);
-    }, [])
-  
-    const columns = [
-      {
-        field: 'name',
-        headerName: 'Name',
-        width: 150,
-        editable: true,
-      },
-      {
-        field: 'category_product',
-        headerName: 'Category name',
-        width: 150,
-        editable: true,
-      },
-      {
-        field: 'image',
-        headerName: 'Image',
-        width: 110,
-        editable: true,
-        renderCell: (params) => (
-          <div>
-            {params.value.length > 0 && <img style={{width: '135%', height: '48px'}} src={API_URL+'/'+params.value[0].file_url} alt="product" />}
-          </div>
-        )
-      },
-      {
-        field: 'description_sale',
-        headerName: 'Description sale',
-        width: 200,
-        editable: true,
-      },
-      {
-        field: 'description_detail',
-        headerName: 'Description detail',
-        width: 200,
-        editable: true,
-      },
-      {
-        field: 'price',
-        headerName: 'Price',
-        width: 110,
-        editable: true,
-      },
-      {
-        field: '_id',
-        headerName: 'Action',
-        sortable: false,
-        width: 200,
-        renderCell: (params) => (
-          <div>
-            <button className='btn btn-success mr-2' onClick={() => moveToEditAdd(params.id)}>
-              Edit
-            </button>
-            <button className='btn btn-danger' onClick={() => handleOpenModal(params.id)}>
-              Delete
-            </button>
-          </div>
-        )
-      },
-    ];
-    
-    return (
-      <div className="hotel">
-        <div className="hotel-header">
-          <h5 className='ml-3'>Slide middle</h5>
-          <button className="btn btn-success mb-3" onClick={moveToProductAdd}>Add New</button>
-        </div>
-        <div>
-          <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              rows={listProducts}
-              columns={columns}
-              pageSize={5}
-              getRowId={(row) => row._id}
-              rowsPerPageOptions={[5]}
-              checkboxSelection
-              disableSelectionOnClick
-            />
-          </Box>
-        </div>
-        <CheckModalComponent 
-            open={openModal}
-            handleCloseModal={handleCloseModal} 
-            modalAccept={handleDeleteProduct}
-        />
-      </div>
-    );
+  }
+
+  const handleDeleteSlide = (item) => {
+    deleteSlideMiddle((res) => {
+      if (res.statusCode === 200) {
+        getFileSlideMiddle(hanldeGetFile);
+        deleteFile(item);
+      }
+    }, {id, item})
+  };
+
+  const handleActiveMove = () => {
+    setActiveModal(true)
+  };
+
+  const handleActiveLeave = () => {
+    setActiveModal(false)
+  };
+
+  useEffect(() => {
+    getFileSlideMiddle(hanldeGetFile);
+  }, []);
+  return (
+    <Grid container marginLeft={4}>
+      <Grid item xs={12} sm={12} md={12} lg={12} marginBottom={4}>
+        <Box>
+          <TextField
+            id="standard-basic"
+            label="Tên Công Ty"
+            name='photos'
+            variant="standard"
+            className='form-input-add form-category'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Box>
+      </Grid>
+      <Grid item xs={12} sm={12} md={12} lg={12} marginBottom={4}>
+        <Box>
+          <TextField
+            id="standard-basic"
+            label="Mô tả"
+            name='photos'
+            variant="standard"
+            className='form-input-add form-category'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </Box>
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={12} lg={12} marginBottom={4}>
+        <Grid className="list-slide-image row">
+          {
+            listImages != undefined && listImages.map((obj, key) => {
+              return (
+                <Grid key={key} className=" col-3">
+                  <Grid
+                    className="list-slide-image-item"
+                    onMouseLeave={handleActiveLeave}
+                    onMouseMove={handleActiveMove}
+                  >
+                    <Grid onClick={() => handleDeleteSlide(obj)} className={activeModal ? 'modal-handle-image active' : 'modal-handle-image'}>
+                      <Grid className="modal-handle-image-content">
+                        <span><i className="fa-solid fa-trash-can"></i></span>
+                        <span>Delete</span>
+                      </Grid>
+                    </Grid>
+                    <img style={{ objectFit: 'cover' }} src={obj} alt="slide ảnh" />
+                  </Grid>
+                </Grid>
+              )
+            })
+          }
+          <label className="col-3 btn-add-slide">
+            <input type="file" multiple className="hidden" onChange={handleAddSlide} />
+            <img style={{ marginRight: '0.5rem' }} src={require('../assets/img/images.png')} alt="" />
+            Upload File
+          </label>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={12} lg={12}>
+        <button className='btn form-btn-submit' onClick={handleSend}>Send</button>
+      </Grid>
+    </Grid>
+  );
 }
 
 export default SlideMiddleComponent;
