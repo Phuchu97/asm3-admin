@@ -30,19 +30,3 @@ export function getFileSlideMiddle(callback) {
       .then(callback)
       .catch((err) => console.log(err));
 }
-
-export function deleteSlideMiddle(callback, data) {
-    const role = localStorage.getItem('role');
-    const token = localStorage.getItem('token');
-    fetch(`${API_URL}/delete-slide-middle`,  {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({...data,role}),
-    })
-      .then(res => res.json())
-      .then(callback)
-      .catch((err) => console.log(err));
-}

@@ -22,6 +22,7 @@ function SlideMiddleComponent() {
       AddslideMiddle((res) => {
         if (res.statusCode === 200) {
           getFileSlideMiddle(hanldeGetFile);
+          toast.success("Thêm ảnh thành công!", {className: 'toast-message'});
         }
       }, { id, name, description, files: [...listImages, file] });
     } else {
@@ -49,12 +50,13 @@ function SlideMiddleComponent() {
   }
 
   const handleDeleteSlide = (item) => {
-    deleteSlideMiddle((res) => {
+    const newListImages = listImages.filter(image => item != image);
+    AddslideMiddle((res) => {
       if (res.statusCode === 200) {
         getFileSlideMiddle(hanldeGetFile);
         deleteFile(item);
       }
-    }, {id, item})
+    }, { id, name, description, files: newListImages })
   };
 
   const handleActiveMove = () => {
