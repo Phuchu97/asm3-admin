@@ -1,9 +1,10 @@
-import { Box } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../Constants/ApiConstant';
-import { getListProducts, deleteProduct } from '../Services/Products';
+import { getListProducts, deleteProduct, updateProductStatus, updateProductFeatured } from '../Services/Products';
+import { getCategoryHierarchy } from '../Services/Category';
 import CheckModalComponent from '../Modals/CheckModal';
 
 function ProductsComponent() {
@@ -11,6 +12,8 @@ function ProductsComponent() {
   const navigate = useNavigate();
   const [listProducts, setListProducts] = useState([]);
   const [currentIdProduct, setCurrentIdProduct] = useState('');
+  const [categoryMap, setCategoryMap] = useState({});
+  const [loading, setLoading] = useState(true);
 
   // Modal check accept
   const [openModal, setOpenModal] = useState(false);
@@ -24,10 +27,8 @@ function ProductsComponent() {
     setOpenModal(false)
   };
 
-  //
-
   const moveToProductAdd = () => {
-    navigate('/home/product-add');
+    navigate('/home/product-add/new');
   }
 
   const moveToEditAdd = (id) => {
@@ -46,67 +47,183 @@ function ProductsComponent() {
   }
 
   const handleGetProducts = (res) => {
-    setListProducts(res.data);
+    if (res.statusCode === 200) {
+      // Làm phong phú dữ liệu sản phẩm với thông tin danh mục
+      const productsWithCategoryInfo = res.data.map(product => {
+        const category = categoryMap[product.category_id];
+        return {
+          ...product,
+          category_name: category ? category.name : 'Không xác định',
+          category_path: category ? category.path : '',
+        };
+      });
+      setListProducts(productsWithCategoryInfo);
+    }
+    setLoading(false);
   }
+  
+  // Hàm cập nhật trạng thái sản phẩm
+  const handleToggleStatus = (id, currentStatus) => {
+    updateProductStatus((res) => {
+      if (res.statusCode === 200) {
+        // Cập nhật lại danh sách sản phẩm
+        const updatedProducts = listProducts.map(product => {
+          if (product._id === id) {
+            return { ...product, status: !currentStatus };
+          }
+          return product;
+        });
+        setListProducts(updatedProducts);
+      } else {
+        alert('Cập nhật trạng thái thất bại!');
+      }
+    }, { id, status: !currentStatus });
+  };
+  
+  // Hàm cập nhật trạng thái nổi bật của sản phẩm
+  const handleToggleFeatured = (id, currentFeatured) => {
+    updateProductFeatured((res) => {
+      if (res.statusCode === 200) {
+        // Cập nhật lại danh sách sản phẩm
+        const updatedProducts = listProducts.map(product => {
+          if (product._id === id) {
+            return { ...product, featured: !currentFeatured };
+          }
+          return product;
+        });
+        setListProducts(updatedProducts);
+      } else {
+        alert('Cập nhật trạng thái nổi bật thất bại!');
+      }
+    }, { id, featured: !currentFeatured });
+  };
 
   useEffect(() => {
-    getListProducts(handleGetProducts);
-  }, [])
+    // Lấy danh sách danh mục để map với sản phẩm
+    getCategoryHierarchy((res) => {
+      if (res.statusCode === 200) {
+        const flatCategories = res.data.flatCategories;
+        const categoryMapping = {};
+        
+        // Tạo map danh mục với thông tin đường dẫn
+        flatCategories.forEach(category => {
+          let path = category.name;
+          if (category.level > 0) {
+            path = `${'-'.repeat(category.level)} ${category.name}`;
+          }
+          
+          categoryMapping[category._id] = {
+            ...category,
+            path
+          };
+        });
+        
+        setCategoryMap(categoryMapping);
+        
+        // Sau khi có danh sách danh mục, lấy danh sách sản phẩm
+        getListProducts(handleGetProducts);
+      }
+    });
+  }, []);
 
   const columns = [
     {
       field: 'name',
-      headerName: 'Name',
-      width: 150,
-      editable: true,
+      headerName: 'Tên sản phẩm',
+      width: 200,
+      editable: false,
     },
     {
-      field: 'category_product',
-      headerName: 'Category name',
-      width: 150,
-      editable: true,
+      field: 'category_path',
+      headerName: 'Danh mục',
+      width: 180,
+      editable: false,
     },
     {
       field: 'image',
-      headerName: 'Image',
-      width: 110,
-      editable: true,
+      headerName: 'Hình ảnh',
+      width: 120,
+      editable: false,
       renderCell: (params) => (
         <div>
-          {params.value.length > 0 && <img style={{width: '135%', height: '48px'}} src={API_URL+'/'+params.value[0].file_url} alt="product" />}
+          {params.value && params.value.length > 0 && 
+            <img 
+              style={{width: 'auto', height: '48px', maxWidth: '100%'}} 
+              src={params.value[0].file_url} 
+              alt="product" 
+            />
+          }
         </div>
       )
     },
     {
-      field: 'description_sale',
-      headerName: 'Description sale',
-      width: 200,
-      editable: true,
-    },
-    {
-      field: 'description_detail',
-      headerName: 'Description detail',
-      width: 200,
-      editable: true,
-    },
-    {
       field: 'price',
-      headerName: 'Price',
-      width: 110,
-      editable: true,
+      headerName: 'Giá',
+      width: 120,
+      editable: false,
+      valueFormatter: (params) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(params.value);
+      }
+    },
+    {
+      field: 'status',
+      headerName: 'Trạng thái',
+      width: 120,
+      editable: false,
+      renderCell: (params) => (
+        <div>
+          <button
+            className={`btn btn-sm ${params.value ? 'btn-primary' : 'btn-outline-secondary'}`}
+            onClick={() => handleToggleStatus(params.row._id, params.value)}
+            title={params.value ? "Ẩn sản phẩm" : "Hiện sản phẩm"}
+            style={{ marginRight: '5px' }}
+          >
+            {params.value ? '👁️' : '⊘'}
+          </button>
+          <Chip 
+            label={params.value ? "Hiển thị" : "Ẩn"} 
+            color={params.value ? "primary" : "default"} 
+            size="small"
+          />
+        </div>
+      )
+    },
+    {
+      field: 'featured',
+      headerName: 'Nổi bật',
+      width: 120,
+      editable: false,
+      renderCell: (params) => (
+        <div>
+          <button
+            className={`btn btn-sm ${params.value ? 'btn-warning' : 'btn-outline-warning'}`}
+            onClick={() => handleToggleFeatured(params.row._id, params.value)}
+            title={params.value ? "Bỏ nổi bật" : "Đánh dấu nổi bật"}
+          >
+            {params.value ? '★' : '☆'}
+          </button>
+        </div>
+      )
     },
     {
       field: '_id',
-      headerName: 'Action',
+      headerName: 'Thao tác',
       sortable: false,
-      width: 200,
+      width: 180,
       renderCell: (params) => (
         <div>
-          <button className='btn btn-success mr-2' onClick={() => moveToEditAdd(params.id)}>
-            Edit
+          <button 
+            className='btn btn-sm btn-primary mr-2' 
+            onClick={() => moveToEditAdd(params.id)}
+            style={{marginRight: '8px'}}
+          >
+            Sửa
           </button>
-          <button className='btn btn-danger' onClick={() => handleOpenModal(params.id)}>
-            Delete
+          <button 
+            className='btn btn-sm btn-danger' 
+            onClick={() => handleOpenModal(params.id)}
+          >
+            Xóa
           </button>
         </div>
       )
@@ -116,19 +233,20 @@ function ProductsComponent() {
   return (
     <div className="hotel">
       <div className="hotel-header">
-        <h5 className='ml-3'>Products List</h5>
-        <button className="btn btn-success mb-3" onClick={moveToProductAdd}>Add New</button>
+        <h5 className='ml-3'>Danh sách sản phẩm</h5>
+        <button className="btn btn-success mb-3" onClick={moveToProductAdd}>Thêm sản phẩm mới</button>
       </div>
       <div>
-        <Box sx={{ height: 400, width: '100%' }}>
+        <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={listProducts}
             columns={columns}
-            pageSize={5}
+            pageSize={10}
             getRowId={(row) => row._id}
-            rowsPerPageOptions={[5]}
+            rowsPerPageOptions={[10, 20, 50]}
             checkboxSelection
             disableSelectionOnClick
+            loading={loading}
           />
         </Box>
       </div>

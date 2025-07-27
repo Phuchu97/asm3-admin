@@ -32,6 +32,50 @@ export function getCategories(callback) {
       .catch((err) => console.log(err));
 }
 
+export function getCategoryHierarchy(callback) {
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/get-category-hierarchy`,  {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+      .then(res => res.json())
+      .then(callback)
+      .catch((err) => console.log(err));
+}
+
+export function getCategoryById(callback, id) {
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/get-category/${id}`,  {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+      .then(res => res.json())
+      .then(callback)
+      .catch((err) => console.log(err));
+}
+
+export function updateCategory(callback, data) {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    fetch(`${API_URL}/update-category`,  {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({...data, role}),
+    })
+      .then(res => res.json())
+      .then(callback)
+      .catch((err) => console.log(err));
+}
+
 export function deleteCategory(callback, id) {
     const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
