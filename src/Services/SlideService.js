@@ -12,7 +12,7 @@ export function Uploadslide(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function Addslide(callback, data) {
@@ -29,7 +29,7 @@ export function Addslide(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function getFileSlide(callback) {
@@ -43,7 +43,7 @@ export function getFileSlide(callback) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function deleteSlide(callback, id) {
@@ -59,5 +59,5 @@ export function deleteSlide(callback, id) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }

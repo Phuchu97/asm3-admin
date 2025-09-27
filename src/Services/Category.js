@@ -15,22 +15,10 @@ export function AddCategory(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
-export function getCategories(callback) {
-    const token = localStorage.getItem('token');
-    fetch(`${API_URL}/get-categories`,  {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-      .then(res => res.json())
-      .then(callback)
-      .catch((err) => console.log(err));
-}
+
 
 export function getCategoryHierarchy(callback) {
     const token = localStorage.getItem('token');
@@ -43,7 +31,7 @@ export function getCategoryHierarchy(callback) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function getCategoryById(callback, id) {
@@ -57,14 +45,14 @@ export function getCategoryById(callback, id) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function updateCategory(callback, data) {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
-    fetch(`${API_URL}/update-category`,  {
-        method: 'PUT',
+    fetch(`${API_URL}/edit-category`,  {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -73,7 +61,7 @@ export function updateCategory(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function deleteCategory(callback, id) {
@@ -89,5 +77,5 @@ export function deleteCategory(callback, id) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }

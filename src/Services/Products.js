@@ -14,7 +14,7 @@ export function AddProduct(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 
@@ -32,7 +32,7 @@ export function getListProducts(callback, options = {}) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function getProductsByCategory(callback, categoryId) {
@@ -46,7 +46,7 @@ export function getProductsByCategory(callback, categoryId) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function editProduct(callback, data) {
@@ -63,7 +63,7 @@ export function editProduct(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function getListProductDetail(callback, data) {
@@ -78,7 +78,7 @@ export function getListProductDetail(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function deleteProduct(callback, data) {
@@ -95,35 +95,37 @@ export function deleteProduct(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function updateProductStatus(callback, data) {
     const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
     fetch(`${API_URL}/update-product-status`,  {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({...data, role}),
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function updateProductFeatured(callback, data) {
     const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
     fetch(`${API_URL}/update-product-featured`,  {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({...data, role}),
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }

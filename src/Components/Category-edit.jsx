@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import '../css/category-add.css'
 import TextField from '@mui/material/TextField';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateCategory, getCategories, getCategoryById } from '../Services/Category';
-import { uploadFile } from '../firebase/uploadFile';
+import { updateCategory, getCategoryHierarchy, getCategoryById } from '../Services/Category';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,8 +14,6 @@ function CategoryEditComponent() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [categoryName, setCategoryName] = useState('');
-  const [categoryImage, setCategoryImage] = useState(null);
-  const [currentImage, setCurrentImage] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState(true);
   const [order, setOrder] = useState(0);
@@ -24,39 +21,60 @@ function CategoryEditComponent() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to check if a category is a descendant of current category
+  const isDescendant = (categoryId, currentId, categoriesData) => {
+    const category = categoriesData.find(cat => cat._id === categoryId);
+    if (!category || !category.parent_id) return false;
+    if (category.parent_id === currentId) return true;
+    return isDescendant(category.parent_id, currentId, categoriesData);
+  };
+
+  // Helper function to render category options with indentation
+  const renderCategoryOption = (category) => {
+    const indent = '— '.repeat(category.level || 0);
+    return `${indent}${category.name}`;
+  };
+
   // Lấy danh sách danh mục và thông tin danh mục hiện tại
   useEffect(() => {
-    // Lấy danh sách danh mục để hiển thị danh mục cha
-    getCategories((res) => {
-      if (res.statusCode === 200) {
-        // Lọc bỏ danh mục hiện tại ra khỏi danh sách để tránh chọn chính nó làm cha
-        setCategories(res.data.filter(cat => cat._id !== id));
-      }
-    });
-
-    // Lấy thông tin danh mục hiện tại
+    let currentCategory = null;
+    
+    // Lấy thông tin danh mục hiện tại trước
     getCategoryById((res) => {
       if (res.statusCode === 200) {
-        const category = res.data;
-        setCategoryName(category.name);
-        setDescription(category.description || '');
-        setStatus(category.status);
-        setOrder(category.order || 0);
-        setParentId(category.parent_id || '');
-        setCurrentImage(category.image);
+        currentCategory = res.data;
+        setCategoryName(currentCategory.name);
+        setDescription(currentCategory.description || '');
+        setStatus(currentCategory.status);
+        setOrder(currentCategory.order || 0);
+        
+        // Lấy danh sách danh mục hierarchy để hiển thị danh mục cha
+        getCategoryHierarchy((hierarchyRes) => {
+          if (hierarchyRes.statusCode === 200) {
+            const flatCategories = hierarchyRes.data.flatCategories || hierarchyRes.data;
+            // Lọc bỏ danh mục hiện tại và các danh mục con của nó để tránh circular reference
+            const filteredCategories = flatCategories.filter(cat => {
+              return cat._id !== id && !isDescendant(id, cat._id, flatCategories);
+            });
+            setCategories(filteredCategories);
+            
+            // Chỉ set parentId nếu parent category vẫn có trong filtered list
+            const parentExists = currentCategory.parent_id && 
+              filteredCategories.some(cat => cat._id === currentCategory.parent_id);
+            setParentId(parentExists ? currentCategory.parent_id : '');
+          }
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     }, id);
   }, [id]);
 
-  const handleUpdateCategory = async () => {
-    let imageUrl = currentImage;
-    
-    // Nếu có hình ảnh mới, upload lên
-    if (categoryImage) {
-      const file = await uploadFile(categoryImage);
-      if (!file) return alert('Có lỗi trong quá trình tải ảnh');
-      imageUrl = file;
+  const handleUpdateCategory = () => {
+    if(categoryName === '') {
+      alert('Vui lòng nhập tên danh mục');
+      return;
     }
 
     const data = {
@@ -65,21 +83,16 @@ function CategoryEditComponent() {
       description,
       status,
       order,
-      parent_id: parentId || null,
-      image: imageUrl
+      parent_id: parentId || null
     };
 
     updateCategory((res) => {
       if (res.statusCode === 200) {
         navigate('/home/categories');
       } else {
-        alert('Cập nhật danh mục thất bại!');
+        alert(res.message || 'Cập nhật danh mục thất bại!');
       }
     }, data);
-  };
-
-  const handleFile = (ev) => {
-    setCategoryImage(ev.target.files[0]);
   };
 
   if (loading) {
@@ -152,29 +165,12 @@ function CategoryEditComponent() {
                 <em>Không có danh mục cha</em>
               </MenuItem>
               {categories.map((category) => (
-                <MenuItem key={category._id} value={category._id}>
-                  {category.name}
+                <MenuItem key={category._id} value={category._id} style={{ fontFamily: 'monospace' }}>
+                  {renderCategoryOption(category)}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-        </div>
-
-        <div className="col-12 form-item">
-          {currentImage && (
-            <div className="mb-3">
-              <p>Hình ảnh hiện tại:</p>
-              <img 
-                src={currentImage} 
-                alt={categoryName} 
-                style={{ maxHeight: '150px', marginBottom: '10px' }} 
-              />
-            </div>
-          )}
-          <label className="col-3 btn-add-slide">
-            <input type="file" onChange={(e) => handleFile(e)} />
-            <span>Chọn ảnh mới (không bắt buộc)</span>
-          </label>
         </div>
 
         <div className='col-12'>

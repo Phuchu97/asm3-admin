@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import '../css/category-add.css'
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
-import { AddCategory, getCategories } from '../Services/Category';
-import { uploadFile } from '../firebase/uploadFile';
+import { AddCategory, getCategoryHierarchy } from '../Services/Category';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,7 +13,6 @@ import Select from '@mui/material/Select';
 function CategoryAddComponent() {
   const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
-  const [categoryImage, setCategoryImage] = useState(null);
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState(true);
   const [order, setOrder] = useState(0);
@@ -22,35 +20,47 @@ function CategoryAddComponent() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    getCategories((res) => {
+    getCategoryHierarchy((res) => {
       if (res.statusCode === 200) {
-        setCategories(res.data);
+        // Use flatCategories for hierarchical dropdown display
+        const flatCategories = res.data.flatCategories || res.data;
+        // Chỉ hiển thị categories cấp 0 và 1 (level 0 và 1)
+        const filteredCategories = flatCategories.filter(category => 
+          (category.level || 0) <= 1
+        );
+        setCategories(filteredCategories);
       }
     });
   }, []);
 
-  const addCategory = async () => {
-    if(categoryImage === undefined || categoryName == '') return;
-    const file = await uploadFile(categoryImage);
-    if(!file) return alert('Có lỗi trong quá trình tải ảnh');
+  const addCategory = () => {
+    if(categoryName === '') {
+      alert('Vui lòng nhập tên danh mục');
+      return;
+    }
+    
     let data = {
-      file,
       name: categoryName,
       description,
       status,
       order,
       parent_id: parentId || null
     }
+    
     AddCategory((res) => {
       if(res.statusCode === 200) {
         navigate('/home/categories')
+      } else {
+        alert(res.message || 'Có lỗi xảy ra khi thêm danh mục');
       }
     }, data)
   }
 
-  const handleFile = (ev) => {
-    setCategoryImage(ev.target.files[0])
-  }
+  // Helper function to render category options with indentation
+  const renderCategoryOption = (category) => {
+    const indent = '— '.repeat(category.level || 0);
+    return `${indent}${category.name}`;
+  };
 
   return (
     <div className="hotel-add">
@@ -115,21 +125,18 @@ function CategoryAddComponent() {
                 onChange={(e) => setParentId(e.target.value)}
               >
                 <MenuItem value="">
-                  <em>Không có danh mục cha</em>
+                  <em>Không có danh mục cha (Tạo danh mục cấp 1)</em>
                 </MenuItem>
                 {categories.map((category) => (
-                  <MenuItem key={category._id} value={category._id}>
-                    {category.name}
+                  <MenuItem key={category._id} value={category._id} style={{ fontFamily: 'monospace' }}>
+                    {renderCategoryOption(category)}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-          </div>
-
-          <div className="list-slide-image col-12 form-item">
-            <label className="col-3 btn-add-slide">
-                <input type="file" multiple onChange={(e) => handleFile(e)} />
-            </label>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+              <strong>Lưu ý:</strong> Chỉ có thể tạo danh mục tối đa cấp 2. Nếu chọn danh mục cha cấp 1, sẽ tạo danh mục cấp 2.
+            </div>
           </div>
 
           <div className='col-12'>

@@ -41,7 +41,6 @@ function SlideMiddleComponent() {
 
   const hanldeGetFile = (res) => {
     if (res.statusCode === 200) {
-      console.log(res);
       setListImages(res.data[0].image);
       setId(res.data[0]._id);
       setName(res.data[0].name);
