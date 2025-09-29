@@ -13,7 +13,6 @@ import Select from '@mui/material/Select';
 function CategoryAddComponent() {
   const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
-  const [description, setDescription] = useState('');
   const [status, setStatus] = useState(true);
   const [order, setOrder] = useState(0);
   const [parentId, setParentId] = useState('');
@@ -41,7 +40,6 @@ function CategoryAddComponent() {
     
     let data = {
       name: categoryName,
-      description,
       status,
       order,
       parent_id: parentId || null
@@ -81,18 +79,6 @@ function CategoryAddComponent() {
             />
           </div>
 
-          <div className='col-12 form-item'>
-            <TextField 
-              id="description" 
-              label="Description" 
-              variant="standard" 
-              multiline
-              rows={4}
-              className='form-input-add form-category'
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
 
           <div className='col-6 form-item'>
             <TextField 

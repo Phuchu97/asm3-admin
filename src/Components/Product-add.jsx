@@ -14,8 +14,7 @@ import Switch from '@mui/material/Switch';
 import FormHelperText from '@mui/material/FormHelperText';
 import { AddProduct, editProduct, getListProductDetail } from '../Services/Products';
 import { uploadMultiFile } from '../firebase/uploadFile';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import RichTextEditor from './RichTextEditor';
 import ProductImageUploader from './ProductImageUploader';
 
 function ProductAddComponent() {
@@ -55,32 +54,7 @@ function ProductAddComponent() {
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingProduct, setIsLoadingProduct] = useState(false);
 
-  // Cấu hình editor giống như blog
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      ['link', 'image'],
-      ['clean'],
-      [{ 'color': [] }, { 'background': [] }],
-      ['blockquote', 'code-block'],
-      ['clean']
-    ],
-  };
-
-  const formats = [
-    'header',
-    'font',
-    'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet',
-    'align',
-    'link', 'image',
-    'color', 'background',
-    'blockquote', 'code-block'
-  ];
+  // Không cần cấu hình modules và formats cho TinyMCE
 
   // Validation function
   const validateForm = () => {
@@ -373,24 +347,15 @@ function ProductAddComponent() {
               Mô tả đầy đủ về sản phẩm, tính năng, ưu điểm (hiển thị trong trang chi tiết)
             </small>
           </div>
-          <div style={{
-            border: errors.descriptionDetail ? '2px solid #d32f2f' : (descriptionDetail ? '2px solid #4caf50' : '1px solid #ccc'),
-            borderRadius: '4px',
-            backgroundColor: errors.descriptionDetail ? '#ffebee' : (descriptionDetail ? '#e8f5e8' : 'white')
-          }}>
-            <ReactQuill
-              theme="snow"
-              value={descriptionDetail}
-              onChange={(value) => {
-                setDescriptionDetail(value);
-                clearError('descriptionDetail');
-              }}
-              modules={modules}
-              formats={formats}
-              placeholder="Nhập mô tả chi tiết sản phẩm với định dạng rich text..."
-              style={{ minHeight: '200px', marginBottom: '50px' }}
-            />
-          </div>
+          <RichTextEditor
+            value={descriptionDetail}
+            onChange={(value) => {
+              setDescriptionDetail(value);
+              clearError('descriptionDetail');
+            }}
+            placeholder="Nhập mô tả chi tiết sản phẩm với định dạng rich text và bảng..."
+            error={!!errors.descriptionDetail}
+          />
           {errors.descriptionDetail ? (
             <div className="text-danger mt-2" style={{ fontSize: '13px', fontWeight: 'bold' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -403,7 +368,7 @@ function ProductAddComponent() {
             </div>
           ) : (
             <div className="text-muted mt-2" style={{ fontSize: '12px' }}>
-              Sử dụng toolbar để định dạng text, thêm hình ảnh, link, v.v.
+              Sử dụng toolbar để định dạng text, thêm hình ảnh, link, bảng, v.v.
             </div>
           )}
         </div>

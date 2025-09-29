@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../Constants/ApiConstant';
 import { uploadFile } from '../firebase/uploadFile';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import RichTextEditor from './RichTextEditor';
 
 function BlogAdd() {
   const navigate = useNavigate();
@@ -20,32 +19,7 @@ function BlogAdd() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Cấu hình editor
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      ['link', 'image'],
-      ['clean'],
-      [{ 'color': [] }, { 'background': [] }],
-      ['blockquote', 'code-block'],
-      ['clean']
-    ],
-  };
-  
-  const formats = [
-    'header',
-    'font',
-    'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet',
-    'align',
-    'link', 'image',
-    'color', 'background',
-    'blockquote', 'code-block'
-  ];
+  // Không cần cấu hình modules và formats cho TinyMCE
 
   // Xử lý khi chọn ảnh
   const handleImageChange = (e) => {
@@ -168,14 +142,12 @@ function BlogAdd() {
             {/* Nội dung */}
             <div className="form-group">
               <label htmlFor="content">Nội dung <span className="text-danger">*</span></label>
-              <ReactQuill
-                theme="snow"
+              <RichTextEditor
                 value={content}
-                onChange={setContent}
-                modules={modules}
-                formats={formats}
-                placeholder="Nhập nội dung bài viết"
-                style={{ minHeight: '100px', marginBottom: '50px' }}
+                onChange={(value) => {
+                  setContent(value);
+                }}
+                placeholder="Nhập nội dung bài viết với định dạng rich text và bảng..."
               />
             </div>
             

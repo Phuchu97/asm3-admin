@@ -14,7 +14,6 @@ function CategoryEditComponent() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [categoryName, setCategoryName] = useState('');
-  const [description, setDescription] = useState('');
   const [status, setStatus] = useState(true);
   const [order, setOrder] = useState(0);
   const [parentId, setParentId] = useState('');
@@ -44,7 +43,6 @@ function CategoryEditComponent() {
       if (res.statusCode === 200) {
         currentCategory = res.data;
         setCategoryName(currentCategory.name);
-        setDescription(currentCategory.description || '');
         setStatus(currentCategory.status);
         setOrder(currentCategory.order || 0);
         
@@ -52,16 +50,36 @@ function CategoryEditComponent() {
         getCategoryHierarchy((hierarchyRes) => {
           if (hierarchyRes.statusCode === 200) {
             const flatCategories = hierarchyRes.data.flatCategories || hierarchyRes.data;
+            
             // Lọc bỏ danh mục hiện tại và các danh mục con của nó để tránh circular reference
             const filteredCategories = flatCategories.filter(cat => {
-              return cat._id !== id && !isDescendant(id, cat._id, flatCategories);
+              // Loại bỏ chính danh mục hiện tại
+              if (cat._id === id || cat._id.toString() === id.toString()) {
+                return false;
+              }
+              // Loại bỏ các danh mục con của danh mục hiện tại
+              if (isDescendant(id, cat._id, flatCategories)) {
+                return false;
+              }
+              return true;
             });
+
+            // Thêm parent category vào danh sách nếu nó bị lọc ra nhưng vẫn cần hiển thị
+            if (currentCategory.parent_id) {
+              const parentCategory = flatCategories.find(cat => 
+                cat._id === currentCategory.parent_id || cat._id.toString() === currentCategory.parent_id.toString()
+              );
+              if (parentCategory && !filteredCategories.some(cat => 
+                cat._id === parentCategory._id || cat._id.toString() === parentCategory._id.toString()
+              )) {
+                filteredCategories.push(parentCategory);
+              }
+            }
+            
             setCategories(filteredCategories);
             
-            // Chỉ set parentId nếu parent category vẫn có trong filtered list
-            const parentExists = currentCategory.parent_id && 
-              filteredCategories.some(cat => cat._id === currentCategory.parent_id);
-            setParentId(parentExists ? currentCategory.parent_id : '');
+            // Set parentId từ currentCategory
+            setParentId(currentCategory.parent_id || '');
           }
           setLoading(false);
         });
@@ -80,7 +98,6 @@ function CategoryEditComponent() {
     const data = {
       id,
       name: categoryName,
-      description,
       status,
       order,
       parent_id: parentId || null
@@ -118,18 +135,6 @@ function CategoryEditComponent() {
           />
         </div>
 
-        <div className='col-12 form-item'>
-          <TextField
-            id="description"
-            label="Description"
-            variant="standard"
-            multiline
-            rows={4}
-            className='form-input-add form-category'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
 
         <div className='col-6 form-item'>
           <TextField
