@@ -15,12 +15,14 @@ export function AddCategory(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
-export function getCategories(callback) {
+
+
+export function getCategoryHierarchy(callback) {
     const token = localStorage.getItem('token');
-    fetch(`${API_URL}/get-categories`,  {
+    fetch(`${API_URL}/get-category-hierarchy`,  {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -29,7 +31,37 @@ export function getCategories(callback) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
+}
+
+export function getCategoryById(callback, id) {
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/get-category/${id}`,  {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+      .then(res => res.json())
+      .then(callback)
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
+}
+
+export function updateCategory(callback, data) {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    fetch(`${API_URL}/edit-category`,  {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({...data, role}),
+    })
+      .then(res => res.json())
+      .then(callback)
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function deleteCategory(callback, id) {
@@ -45,5 +77,5 @@ export function deleteCategory(callback, id) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }

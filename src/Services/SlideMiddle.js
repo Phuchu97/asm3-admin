@@ -14,7 +14,7 @@ export function AddslideMiddle(callback, data) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }
 
 export function getFileSlideMiddle(callback) {
@@ -28,5 +28,5 @@ export function getFileSlideMiddle(callback) {
     })
       .then(res => res.json())
       .then(callback)
-      .catch((err) => console.log(err));
+      .catch((err) => callback({ error: true, message: err.message || 'Network error' }));
 }

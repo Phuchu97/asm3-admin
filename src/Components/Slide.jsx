@@ -12,13 +12,12 @@ function SlideComponent() {
     const handleAddSlide = async (ev) => {
         const files = ev.target.files;
         const file = await uploadFile(files[0]);
-        console.log(file);
         if (file) {
             Addslide((res) => {
                 if (res.statusCode === 200) {
                     getFileSlide(hanldeGetFile);
                 } else {
-                    console.log(res.message);
+                    alert(res.message || 'Có lỗi xảy ra khi thêm slide');
                 }
             }, {file: `${file}`});
         } else {
@@ -28,7 +27,6 @@ function SlideComponent() {
 
     const hanldeGetFile = (res) => {
         if (res.statusCode === 200) {
-            console.log(res);
             setSlideImages(res.data);
         }
     }

@@ -56,26 +56,26 @@ function HomeComponent() {
                 Slide Middle
               </Link>
             </li>
+            <li className="list-title-item">
+              <Link to={'/home/blog'} style={{textDecoration: 'none'}}>
+                <i class="fa-solid fa-newspaper"></i>
+                Blog
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* <div className="row sidebar-item sidebar-list">
+        <div className="row sidebar-item sidebar-list">
           <h5>NEW</h5>
           <ul className="list-title">
             <li className="list-title-item">
-              <Link to={'/home/hotels/hotel-add'} style={{textDecoration: 'none'}}>
-                <i class="fa-solid fa-hotel"></i>
-                New Hotel
-              </Link>
-            </li>
-            <li className="list-title-item">
-              <Link to={'/home/category-add'} style={{textDecoration: 'none'}}>
-                <i class="fa-solid fa-person-shelter"></i>
-                New Category
+              <Link to={'/home/blog/add'} style={{textDecoration: 'none'}}>
+                <i class="fa-solid fa-plus"></i>
+                New Blog Post
               </Link>
             </li>
           </ul>
-        </div> */}
+        </div>
       </div>
 
       <div className="col-10 home-right dashboard-header">

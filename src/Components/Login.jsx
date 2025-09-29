@@ -32,11 +32,10 @@ function LoginComponent() {
     }
 
     const callbackRegister = (res) => {
-      console.log(res);
         if(res.statusCode === 200) {
           IsRegister();
         } else {
-            alert('Có lỗi trong quá trình xử lý!');
+          alert(res.message || 'Đăng ký thất bại');
         }
     }
 

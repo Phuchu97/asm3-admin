@@ -2,8 +2,7 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { getCategories, deleteCategory } from '../Services/Category';
-import { API_URL } from '../Constants/ApiConstant';
+import { deleteCategory, getCategoryHierarchy } from '../Services/Category';
 
 function CategoriesComponent() {
   
@@ -16,43 +15,91 @@ function CategoriesComponent() {
 
   const handleDeleteCategory = (data) => {
     deleteCategory((res) => {
-      console.log(res);
       if(res.statusCode === 200) {
-        getCategories((res) => {setListCategories(res.data);})
+        loadCategories();
+      } else {
+        alert(res.message || 'Có lỗi xảy ra khi xóa danh mục');
       }
     }, data.id)
   }
 
+  const loadCategories = () => {
+    getCategoryHierarchy((res) => {
+      if(res.statusCode === 200) {
+        // Use flatCategories from hierarchy response for proper tree structure display
+        const flatCategories = res.data.flatCategories || res.data;
+        // Lọc bỏ categories cấp 3 trở lên để hiển thị
+        const filteredCategories = flatCategories.filter(category => 
+          (category.level || 0) <= 2
+        );
+        setListCategories(filteredCategories);
+      }
+    });
+  }
+
+  // Helper function to render category name with indentation based on level
+  const renderCategoryName = (category) => {
+    const indent = '— '.repeat(category.level || 0);
+    return `${indent}${category.name}`;
+  };
+
   useEffect(() => {
-    getCategories((res) => {setListCategories(res.data);})
-  }, [])
+    loadCategories();
+  }, []);
 
   const columns = [
     {
       field: 'name',
       headerName: 'Category Name',
-      width: 350,
-      editable: true,
-    },
-    {
-      field: 'image',
-      headerName: 'Image',
-      width: 200,
-      editable: true,
+      width: 300,
+      editable: false,
       renderCell: (params) => (
-        <div>
-          <img style={{width: '135%', height: '48px'}} src={params.value} alt="abc" />
+        <div style={{ fontFamily: 'monospace' }}>
+          {renderCategoryName(params.row)}
         </div>
       )
     },
     {
+      field: 'status',
+      headerName: 'Status',
+      width: 120,
+      editable: false,
+      renderCell: (params) => (
+        <div>
+          {params.value ? 'Active' : 'Inactive'}
+        </div>
+      )
+    },
+    {
+      field: 'order',
+      headerName: 'Sort Order',
+      width: 120,
+      editable: false,
+    },
+    {
+      field: 'slug',
+      headerName: 'Slug',
+      width: 200,
+      editable: false,
+    },
+    {
       field: 'id',
-      headerName: 'Handle',
+      headerName: 'Actions',
       sortable: false,
       width: 200,
       renderCell: (params) => (
-        <div  onClick={() => handleDeleteCategory(params)}>
-          <button className='btn btn-danger' >
+        <div>
+          <button 
+            className='btn btn-primary mr-2'
+            onClick={() => navigate(`/home/category-edit/${params.row._id}`)}
+            style={{marginRight: '8px'}}
+          >
+            Edit
+          </button>
+          <button 
+            className='btn btn-danger' 
+            onClick={() => handleDeleteCategory(params)}
+          >
             Delete
           </button>
         </div>
@@ -67,13 +114,13 @@ function CategoriesComponent() {
         <button className="btn btn-success" onClick={moveToCategoryAdd}>Add New</button>
       </div>
       <div>
-        <Box sx={{ height: 400, width: '100%' }}>
+        <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={listCategories}
             columns={columns}
-            pageSize={5}
+            pageSize={10}
             getRowId={(row) => row._id}
-            rowsPerPageOptions={[5]}
+            rowsPerPageOptions={[10, 25, 50]}
             checkboxSelection
             disableSelectionOnClick
           />
