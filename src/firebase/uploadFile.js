@@ -1,34 +1,46 @@
-import { storage } from "./config.js";
-import {
-    ref,
-    uploadBytes,
-    getDownloadURL,
-    deleteObject
-} from "firebase/storage";
-import { v4 } from "uuid";
+import axios from "axios";
+import { API_URL } from "../Constants/ApiConstant";
 
 export const uploadFile = async (imageUpload) => {
-    console.log(imageUpload);
-    if (imageUpload == null) return;
-    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
-    const snapshot = await uploadBytes(imageRef, imageUpload)
-    const url = await getDownloadURL(snapshot.ref);
-    return url;
+    if (!imageUpload) return;
+    const form = new FormData();
+    form.append("file", imageUpload);
+
+    const token = localStorage.getItem("token");
+    const res = await axios.post(`${API_URL}/upload`, form, {
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        timeout: 60_000,
+    });
+
+    return res.data?.data?.url;
 };
 
 export const uploadMultiFile = async (imagesUpload) => {
-    if (imagesUpload == null) return;
-    let listImages = [];
-    for(var i = 0; i < imagesUpload.length; i++) {
-        const imageRef = ref(storage, `images/${imagesUpload[i].name + v4()}`);
-        const snapshot = await uploadBytes(imageRef, imagesUpload[i]);
-        const url = await getDownloadURL(snapshot.ref);
-        listImages.push(url);
+    if (!imagesUpload) return;
+    const listImages = [];
+    for (let i = 0; i < imagesUpload.length; i++) {
+        const url = await uploadFile(imagesUpload[i]);
+        if (url) listImages.push(url);
     }
     return listImages;
 };
 
 export const deleteFile = async (imageUpload) => {
-    const imageRef = ref(storage,imageUpload);
-    deleteObject(imageRef);
+    if (!imageUpload) return;
+    const token = localStorage.getItem("token");
+    try {
+        await axios.delete(`${API_URL}/upload`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                "Content-Type": "application/json",
+            },
+            data: { url: imageUpload },
+            timeout: 30_000,
+        });
+    } catch (e) {
+        // best-effort delete; don't break UI if cleanup fails
+        console.warn("Delete file failed", e?.message || e);
+    }
 };

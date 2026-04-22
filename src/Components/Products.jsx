@@ -61,21 +61,40 @@ function ProductsComponent() {
       editable: true,
     },
     {
-      field: 'category_product',
+      field: 'category_name',
       headerName: 'Category name',
       width: 150,
       editable: true,
+      valueGetter: (params) => params?.row?.category_id?.name || '',
     },
     {
-      field: 'image',
+      field: 'images',
       headerName: 'Image',
       width: 110,
       editable: true,
-      renderCell: (params) => (
-        <div>
-          {params.value.length > 0 && <img style={{width: '135%', height: '48px'}} src={API_URL+'/'+params.value[0].file_url} alt="product" />}
-        </div>
-      )
+      renderCell: (params) => {
+        const images = params?.value ?? params?.row?.images ?? [];
+
+        let firstUrl = null;
+        if (Array.isArray(images) && images.length > 0) {
+          const first = images[0];
+          firstUrl = typeof first === 'string' ? first : first?.url;
+        }
+
+        // Backward compat: old API shape { image: [{ file_url: 'uploads/...' }] }
+        if (!firstUrl && Array.isArray(params?.row?.image) && params.row.image.length > 0) {
+          const legacy = params.row.image[0];
+          if (legacy?.file_url) firstUrl = `${API_URL}/${legacy.file_url}`.replace(/\/+$/, '');
+        }
+
+        if (!firstUrl) return <div />;
+
+        return (
+          <div>
+            <img style={{ width: '135%', height: '48px', objectFit: 'cover' }} src={firstUrl} alt="product" />
+          </div>
+        );
+      },
     },
     {
       field: 'description_sale',
